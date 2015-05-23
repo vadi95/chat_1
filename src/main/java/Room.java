@@ -6,19 +6,21 @@ import java.util.ArrayList;
  * Created by Vadiraja on 23-May-15.
  */
 public class Room {
-    static ArrayList<String> rooms=new ArrayList<String>();
-    static void addroom(String name)
+    ArrayList<String> members=new ArrayList<String>();
+    String name="";
+    ArrayList <message> messages=new ArrayList<message>();
+
+    Room(String name)
     {
-        rooms.add(name);
+        this.name=name;
     }
-    static boolean check(String name)
+    static boolean check(String name, ArrayList<Room> rooms)
     {
         System.out.println("Test");
-       if(rooms.contains(name))
-            return true;
-        else
-            return false;
+        for(int i=0;i<rooms.size();i++)
+            if(rooms.get(i).name.equals(name))
+                return true;
+        return false;
     }
-
 
 }

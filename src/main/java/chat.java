@@ -3,6 +3,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,9 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 public class chat {
+
+        static ArrayList<Room> rooms=new ArrayList<Room>();
+
 
     public static void main(String[] args) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress(8103), 0);
@@ -54,22 +58,34 @@ public class chat {
             if(parms.get("ret").equals("create"))
             {
                 String r= parms.get("roomname");
-                System.out.println(r);
-                if(Room.check(r))
-                    displayhome(t,0);
+                if(Room.check(r,rooms))
+                {
+                    rooms.add(new Room(r));
+                    displayhome(t, 0);
+                }
                 else
                 {
-                    Room.addroom(parms.get("roomname"));
+                    rooms.add(new Room(r));
                     displayhome(t,1);
                 }
             }
             else if(parms.get("ret").equals("enter"))
             {
                 String r= parms.get("roomname");
-                System.out.println(r);
-                if(Room.check(r))
-                {
 
+                if(Room.check(r,rooms))
+                {
+                    Headers responseHeaders=t.getResponseHeaders();
+                    responseHeaders.set("Content-Type", "text/html");
+                    BufferedInputStream bis=new BufferedInputStream (new FileInputStream("C:\\Html\\chatroom.html"));
+                    int len=bis.available();
+                    byte[] ba = new byte[len];
+                    bis.read(ba, 0, len);
+                    // t.sendResponseHeaders(200, len+30);
+                    OutputStream os = t.getResponseBody();
+                    t.sendResponseHeaders(200, len);
+                    os.write(ba);
+                    os.close();
                 }
                 else
                     displayhome(t,3);
@@ -77,8 +93,6 @@ public class chat {
             }
         }
     }
-
-
 
 
     public static Map<String, String> queryToMap(String query){
