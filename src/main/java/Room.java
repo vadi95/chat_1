@@ -16,7 +16,6 @@ public class Room {
     }
     static boolean check(String name, ArrayList<Room> rooms)
     {
-        System.out.println("Test");
         for(int i=0;i<rooms.size();i++)
             if(rooms.get(i).name.equals(name))
                 return true;
