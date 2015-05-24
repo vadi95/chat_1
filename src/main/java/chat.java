@@ -12,15 +12,15 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+
 public class chat {
-
-        static ArrayList<Room> rooms=new ArrayList<Room>();
-
+    static int flag=0;
+    static ArrayList<Room> rooms=new ArrayList<Room>();
 
     public static void main(String[] args) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress(8103), 0);
-        server.createContext("/test", new home());
-        server.createContext("/room", new room());
+        server.createContext("/home", new home());
+        server.createContext("/chatroom", new chatroom());
         server.setExecutor(null); // creates a default executor
         server.start();
     }
@@ -47,22 +47,26 @@ public class chat {
         os.write(ba);
         os.close();
     }
-    static class home implements HttpHandler {
+    static class chatroom implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
+
             displayhome(t,2);
         }
     }
-    static class room implements HttpHandler {
+    static class home implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
+
+            if(flag==0){
+                displayhome(t,2);
+                flag=1;
+            }
             Map <String,String>parms = queryToMap(t.getRequestURI().getQuery());
+
             if(parms.get("ret").equals("create"))
             {
                 String r= parms.get("roomname");
                 if(Room.check(r,rooms))
-                {
-                    rooms.add(new Room(r));
                     displayhome(t, 0);
-                }
                 else
                 {
                     rooms.add(new Room(r));
@@ -81,7 +85,7 @@ public class chat {
                     int len=bis.available();
                     byte[] ba = new byte[len];
                     bis.read(ba, 0, len);
-                    // t.sendResponseHeaders(200, len+30);
+                    String q="Members Present: ";
                     OutputStream os = t.getResponseBody();
                     t.sendResponseHeaders(200, len);
                     os.write(ba);

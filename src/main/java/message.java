@@ -3,7 +3,7 @@
  */
 public class message {
     private String body;
-    private String name;
-    private String room;
+    private String from;
+    private String toroom;
 
 }
